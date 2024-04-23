@@ -24,6 +24,12 @@ module.exports = function updateUserProfile () {
               (req.headers.referer?.includes('://htmledit.squarefree.com'))) &&
               req.body.username !== user.username
           })
+
+            const regex = new RegExp("^[0-9a-zA-Z\_]+$");
+            if (!regex.test(req.body.username)){
+                return;
+            } 
+            
           void user.update({ username: req.body.username }).then((savedUser: UserModel) => {
             // @ts-expect-error FIXME some properties missing in savedUser
             savedUser = utils.queryResultToJson(savedUser)

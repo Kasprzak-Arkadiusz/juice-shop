@@ -14,6 +14,10 @@ const security = require('../lib/insecurity')
 module.exports = function productReviews () {
   return (req: Request, res: Response, next: NextFunction) => {
     const id = req.body.id
+    const regex = new RegExp("^[0-9a-zA-Z]+$");
+    if (!regex.test(id)) {
+        res.status(400).json({ error: 'Wrong Params' });
+    }
     const user = security.authenticatedUsers.from(req)
     db.reviews.findOne({ _id: id }).then((review: Review) => {
       if (!review) {

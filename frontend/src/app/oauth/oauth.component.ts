@@ -17,7 +17,13 @@ export class OAuthComponent implements OnInit {
   constructor (private readonly cookieService: CookieService, private readonly userService: UserService, private readonly router: Router, private readonly route: ActivatedRoute, private readonly ngZone: NgZone) { }
 
   ngOnInit () {
-    this.userService.oauthLogin(this.parseRedirectUrlParams().access_token).subscribe((profile: any) => {
+    let redirectParams = this.parseRedirectUrlParams();
+    this.userService.oauthLogin(redirectParams.access_token).subscribe((profile: any) => {
+      if (!("state" in redirectParams) || redirectParams.state !== localStorage.getItem("state")){
+        this.invalidateSession("Invalid state parameter!")
+        this.ngZone.run(async () => await this.router.navigate(['/login']))
+        return;
+      }
       const password = btoa(profile.email.split('').reverse().join(''))
       this.userService.save({ email: profile.email, password, passwordRepeat: password }).subscribe(() => {
         this.login(profile)
@@ -43,10 +49,11 @@ export class OAuthComponent implements OnInit {
     })
   }
 
-  invalidateSession (error: Error) {
+  invalidateSession (error: Error | string) {
     console.log(error)
     this.cookieService.remove('token')
     localStorage.removeItem('token')
+    localStorage.removeItem("state")
     sessionStorage.removeItem('bid')
   }
 

@@ -1,6 +1,11 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
+    "paths": {
+      "crypto": [
+        "node_modules/crypto-browserify"
+      ]
+    },
     "outDir": "./build",
     "allowJs": true,
     "module": "commonjs",

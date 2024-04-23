@@ -1,2 +1,4 @@
 challenges:
   safetyOverride: true
+authorizedRedirects:
+- { uri: 'http://localhost:3000', proxy: 'https://local3000.owasp-juice.shop' }
